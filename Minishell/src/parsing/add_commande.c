@@ -3,13 +3,19 @@
 int	find_end_command(char *line, int index)
 {
   int start_flag;
-
+  //ls"ds"|pwd
+  if (line[index] == '|')
+    return (-1);
   while (line[index] != '\0' && line[index] != ' ' && line[index] != '|' && line[index] != '>' && line[index] != '<')
     index++;
   while (line[index] == ' ')
     index++;
   while (1)
   {
+    if(line[index] == '|')
+      break;
+    if (line[index] == '\0')
+      break ;
     if (line[index] == '-')
     {
 			start_flag = index;
@@ -20,6 +26,12 @@ int	find_end_command(char *line, int index)
 			while (line[index] == ' ')
         index++;
 		}
+    else if (line[index] != '\0' && line[index] != '-' && line[index] != ' ')
+    {
+      while (line[index] == ' ')
+        index--;
+      index++;
+    }
     else
 		  break;
   }
@@ -38,10 +50,13 @@ t_line  *create_node_commande(int taille)
     return (NULL);
   new_node->quotes = NONE;
   new_node->type = TOKEN_COMMANDE;
+  new_node->command_type = PAS_COMMANDE;
   new_node->commande = NULL;
   new_node->flag = NULL;
+  new_node->argc = NULL;
   new_node->next = NULL;
   new_node->prev = NULL;
+  new_node->index = 0;
   return (new_node);
 }
 
@@ -66,6 +81,8 @@ void	add_commande(int *index, t_all *all, t_line **head)
   t_line *node;
 
   start = *index;
+  while (all->line[start] == ' ')
+    start++;
   end = find_end_command(all->line, start);
   if (end == -1)
   {
@@ -83,7 +100,7 @@ void	add_commande(int *index, t_all *all, t_line **head)
     exit (1);
   }
   fill_node_commande(node, all->line, start, end);
-  fill_node_commande_flag_and_commade(node, all);
+  //fill_flag_and_commande(node, all, head); // on va remplir les varibles speciale pour 
   add_node_to_head(head, node);
   *index = end;
   all->commande = 1;

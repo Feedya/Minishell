@@ -60,3 +60,21 @@ void	ft_strncpy(char *str, char *dest, int index, int taille)
 	}
 	dest[i] = '\0';
 }
+
+void	ft_strcat(char *dest, char *str)
+{
+	int	i;
+	int	c;
+
+	i = 0;
+	c = 0;
+	while (dest[i] != '\0')
+		i++;
+	while (str[c] != '\0')
+	{
+		dest[i] = str[c];
+		c++;
+		i++;
+	}
+	dest[i] = '\0';
+}

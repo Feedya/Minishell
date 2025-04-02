@@ -19,12 +19,29 @@ void	add_node_to_head(t_line **head, t_line *node)
 void	print_list(t_line **head)
 {
 	t_line *node;
+	int	c;
 
+	c = 0;
 	node = *head;
 	while (node != NULL)
 	{
-		printf("%d : ", node->type);
-		printf("%s\n", node->valeur);
+		c = 0;
+		printf("%d :%s:\n", node->type, node->valeur);
+		if (node->type == TOKEN_COMMANDE)
+		{
+			if (node->argc != NULL)
+			{
+				while (node->argc[c] != NULL)
+				{
+					printf(" ARGC : :%s:\n", node->argc[c]);
+					c++;
+				}
+			}
+			printf("TYPE : %d\n", node->type);
+			printf("COMMANDE TYPE : %d\n", node->command_type);
+			printf("COMMANDE : :%s:\n", node->commande);
+			printf("FLAG : :%s:\n", node->flag);
+		}
 		node = node->next;
 	}
 }

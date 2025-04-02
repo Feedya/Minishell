@@ -14,17 +14,20 @@ t_line  *create_node_pipe(void)
   new_node->valeur[1] = '\0';
   new_node->type = TOKEN_PIPE;
   new_node->quotes = NONE;
+  new_node->command_type = PAS_COMMANDE;
   new_node->commande = NULL;
   new_node->flag = NULL;
+  new_node->argc = NULL;
 	new_node->next = NULL;
 	new_node->prev = NULL;
+  new_node->index = 0;
   return (new_node);
 }
 
 void  add_pipe(t_all *all, t_line **head, int *index)
 {
   t_line *node;
-
+  
   node = create_node_pipe();
   if (node == NULL)
 	{

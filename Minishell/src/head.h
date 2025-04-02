@@ -1,6 +1,11 @@
-#ifndef HEAD_H
+a#ifndef HEAD_H
 # define HEAD_H
 //valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind_log.txt
+//valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --track-origins=yes ./minishell
+
+//TRUQUE IMPORTANT
+//
+//1 : Chaque fois que j ai une fonciton qui renvoie un int pour dire si c est juste ou faux : 1 est pour faux et 0 est pour juste
 
 #include <stdlib.h>
 #include <readline/readline.h>
@@ -46,15 +51,25 @@ typedef enum quotes // pour savoir si le charactere qu on regarde si il est dans
   NONE,
 } e_quotes;
 
+typedef enum command_type
+{
+  BUILD_IN,
+  EXTERN,
+  PAS_COMMANDE,
+} e_command_type;
+
 typedef struct t_line
 {
+  int index; // que pour commande c est l index dans les variables d env
   struct t_line *next;
   struct t_line *prev;
   char *valeur; //tout
   char *commande; // on utilise que si commande
   char *flag; // utilise que si commande
+  char **argc;
   e_token_type type;
   e_quotes quotes;
+  e_command_type command_type; // utiliser que commande
 } t_line;
 
 typedef struct t_all
@@ -78,6 +93,7 @@ void	ft_strcpy(char *str, char *dest);
 t_all	*malloc_struct_all(void);
 int	ft_strncmp(char *avec_quoi, char *comparer, int nbr);
 void	ft_strncpy(char *str, char *dest, int index, int taille);
+void	ft_strcat(char *dest, char *str);
 
 //UTILS LISTE
 void	add_node_to_head(t_line **head, t_line *node);
@@ -127,5 +143,21 @@ int	put_files(t_line **head);
 int remove_empty_double_and_single_quotes(t_line **head);
 //VERIFIER COMMANDE
 int verifier_commande(t_line **head, t_all *all);
+//FILL_FLAG_AND_COMMANDE
+//RENMOVE QUOTES FROM COMMANDE + FILL LES CHAR * FLAG ET COMMANDE
+void	create_char_commande_node(t_line *node, t_line **head, t_all *all);
+void  remove_quotes_from_commande(t_line **head);
+void  fill_flag_and_commande(t_all *all, t_line **head);
+//VERIFIER PIPE
+int verifier_pipe(t_line **head);
+//CREATE ARGC OF COMMANDE
+int create_argc_of_command(t_line **head);
+//REMPLIR ARGC OF COMMANDE NODE
+int remplir_argc_of_command_node(t_line *node);
+
+//EXECUTION
+void  execution(t_line **head, t_all *all);
+//EXECUTION EXTERNE
+void  execute_extern_command(t_line **head, t_all *all, t_line *node, int index)
 
 #endif

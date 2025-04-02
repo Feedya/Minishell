@@ -15,6 +15,8 @@ void  parsing(t_all *all, t_line **head)
   int i;
 
   i = 0;
+	while (all->line[i] == ' ') //on saute les espace du debut
+		i++;
 	add_commande(&i, all, head);
   while (all->line[i] != '\0')
   {

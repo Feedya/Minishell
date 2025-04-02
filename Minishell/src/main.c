@@ -18,52 +18,20 @@ void	main_loop(t_all *all)
 	t_line **head;
 
 	head = initialize_line(all);
-	//while (1)
-	//{
 		all->line = readline("minishell > ");
-		//if (all->line == NULL)
-		//	break;
-		//else
-		//{
+		if (all->line == NULL)
+			return ;
 		parsing(all, head);
 		verification_du_parsing(head, all);
+		//execution(head, all);
 		print_list(head);
 		add_history(all->line);
 		//}c
 		free_list(head);
 		free(all->line);
 		all->line = NULL;
-	//}
 }
 
-int	main(int argc, char **argv, char **env)
-{
-	t_all *all;
-
-	(void) argc;
-	(void) argv;
-	//CMALLOC DE TOUT
-	all = malloc_struct_all();
-	
-	//COPIE CHAR **ENV DANS TOUT
-	//DEUX CAS A VERIFIER SI L ENVIRONNEMENT EXISTE OU SI IL N EXISTE PAS
-	if (env[0] == NULL)
-		create_env_in_all(all);//pour le cas si env n existe pas
-	else
-		copy_env_in_all(all, env); //pour le cas si env n existe pas
-	
-	//ON CREE LE CHAR **PATH 
-	copy_path(all);//creation du path pour les commandes externe
-
-	//ON DOIT METTRE LES SIGNAUX
-	make_signal();// pour ctrl + d/l/c
-
-	// MAIN LOOP
-	main_loop(all);
-	free_all(all);
-	rl_clear_history();
-	return (0);
-}
 
 void	free_list(t_line **head)
 {
@@ -73,6 +41,16 @@ void	free_list(t_line **head)
 	new_node = *head;
 	while (new_node != NULL)
 	{
+		if (new_node->flag != NULL)
+		{
+			free(new_node->flag);
+			new_node->flag = NULL;
+		}
+		if (new_node->commande != NULL)
+		{
+			free(new_node->commande);
+			new_node->commande = NULL;
+		}
 		next = new_node->next;
 		free(new_node->valeur);
 		new_node->valeur = NULL;
@@ -120,4 +98,33 @@ void	free_all(t_all *all)
 		free(all);
 		all = NULL;
 	}
+}
+
+int	main(int argc, char **argv, char **env)
+{
+	t_all *all;
+
+	(void) argc;
+	(void) argv;
+	//CMALLOC DE TOUT
+	all = malloc_struct_all();
+	
+	//COPIE CHAR **ENV DANS TOUT
+	//DEUX CAS A VERIFIER SI L ENVIRONNEMENT EXISTE OU SI IL N EXISTE PAS
+	if (env[0] == NULL)
+		create_env_in_all(all);//pour le cas si env n existe pas
+	else
+		copy_env_in_all(all, env); //pour le cas si env n existe pas
+	
+	//ON CREE LE CHAR **PATH 
+	copy_path(all);//creation du path pour les commandes externe
+
+	//ON DOIT METTRE LES SIGNAUX
+	make_signal();// pour ctrl + d/l/c
+
+	// MAIN LOOP
+	main_loop(all);
+	free_all(all);
+	rl_clear_history();
+	return (0);
 }

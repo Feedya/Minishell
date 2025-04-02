@@ -19,10 +19,13 @@ t_line  *create_node_word(int taille)
     return (NULL);
   new_node->quotes = NONE;
   new_node->type = TOKEN_WORD;
+  new_node->command_type = PAS_COMMANDE;
   new_node->commande = NULL;
   new_node->flag = NULL;
+  new_node->argc = NULL;
   new_node->next = NULL;
   new_node->prev = NULL;
+  new_node->index = 0;
   return (new_node);
 }
 

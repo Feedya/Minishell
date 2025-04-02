@@ -10,6 +10,8 @@ void  verification_du_parsing(t_line **head, t_all *all)
 		free_list(head);
 		exit (1);
 	}
+	remove_quotes_from_commande(head);
+	fill_flag_and_commande(all, head);
   erreur = put_files(head);
   if (erreur == 1)
   {
@@ -18,6 +20,20 @@ void  verification_du_parsing(t_line **head, t_all *all)
     exit (1);
   }
   erreur = verifier_commande(head, all);
+	if (erreur == 1)
+	{
+		free_all(all);
+		free_list(head);
+		exit (1);
+	}
+	erreur = verifier_pipe(head);
+	if (erreur == 1)
+	{
+		free_all(all);
+		free_list(head);
+		exit (1);
+	}
+	erreur = create_argc_of_command(head);
 	if (erreur == 1)
 	{
 		free_all(all);
