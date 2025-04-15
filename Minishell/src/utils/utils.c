@@ -10,18 +10,6 @@ int	ft_strlen(char *str)
 	return (i);
 }
 
-t_all	*malloc_struct_all(void)
-{
-	t_all *all;
-
-	all = malloc(sizeof(t_all));
-	if (all == NULL)
-		exit (1);
-	all->env = NULL;
-	all->path = NULL;
-	return (all);
-}
-
 void	ft_strcpy(char *str, char *dest)
 {
 	int	i;

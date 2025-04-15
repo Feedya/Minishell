@@ -18,7 +18,7 @@ int	malloc_small_parts_of_env_of_all(char **all_env, char **env)
 	return (0);
 }
 
-void	malloc_env_of_all(t_all *all, char **env)
+int	malloc_env_of_all(t_all *all, char **env)
 {
 	int	big_size;
 
@@ -28,7 +28,7 @@ void	malloc_env_of_all(t_all *all, char **env)
 	all->env = malloc(sizeof(char *) * (big_size + 1));
 	if (all->env == NULL)
 	{
-		free(all);
+		free_all(all);
 		exit (1);
 	}
   all->env[big_size] = NULL;
@@ -36,7 +36,9 @@ void	malloc_env_of_all(t_all *all, char **env)
 	{
 		printf("probleme malloc malloc small parts of env of all\n");
 		free_all(all);
+		exit (1);
 	}
+	return (big_size);
 }
 
 void  fill_env_of_all(char **all_env, char **env)
@@ -53,6 +55,13 @@ void  fill_env_of_all(char **all_env, char **env)
 
 void	copy_env_in_all(t_all *all, char **env)
 {
-	malloc_env_of_all(all, env);
+	int	big_size;
+
+	//ici on malloc le char **path
+	big_size = malloc_env_of_all(all, env);
 	fill_env_of_all(all->env, env);
+
+	//ici on malloc le char **path_values
+	malloc_env_values(all, env, big_size);
+
 }

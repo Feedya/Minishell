@@ -1,4 +1,4 @@
-a#ifndef HEAD_H
+#ifndef HEAD_H
 # define HEAD_H
 //valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind_log.txt
 //valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all --track-origins=yes ./minishell
@@ -64,33 +64,43 @@ typedef struct t_line
   struct t_line *next;
   struct t_line *prev;
   char *valeur; //tout
+  char *commande_path;//que si commande
   char *commande; // on utilise que si commande
   char *flag; // utilise que si commande
   char **argc;
-  e_token_type type;
+  e_token_type type;//type
   e_quotes quotes;
   e_command_type command_type; // utiliser que commande
 } t_line;
 
 typedef struct t_all
 {
-  int start; // index pour les double quotes ou ils commencent et ou ils finissent le int end aussi
-  int end;
-  int commande; //sera a 1 si on a une commande donc on cerche un argument ou redericition 0 si on a pas de commande avant
+  //int start; // index pour les double quotes ou ils commencent et ou ils finissent le int end aussi
+  //int end;
+  int commande; //parsing//sera a 1 si on a une commande donc on cerche un argument ou redericition 0 si on a pas de commande avant
   char *line;
   char **path;
+  char **path_values;
   char **env;
 } t_all;
 
+//pour execution liste de coommandes shell
+typedef struct t_shell_command
+{
+  struct t_shell_command	*next;
+  struct t_shell_command	*prev;
+	int	error_indicator; //message dd erreur
+	int	stdin;
+	int	stdout;
+	t_line	*command_info;// pointeur sur commande
+}	t_shell_command;
+
 //MAIN
 int	main(int argc, char **argv, char **env);
-void	free_all(t_all *all);
-void	free_list(t_line **head);
 
 //UTILS
 int	ft_strlen(char *str);
 void	ft_strcpy(char *str, char *dest);
-t_all	*malloc_struct_all(void);
 int	ft_strncmp(char *avec_quoi, char *comparer, int nbr);
 void	ft_strncpy(char *str, char *dest, int index, int taille);
 void	ft_strcat(char *dest, char *str);
@@ -99,11 +109,18 @@ void	ft_strcat(char *dest, char *str);
 void	add_node_to_head(t_line **head, t_line *node);
 void	print_list(t_line **head);
 void	printf_liste_a_lenvers(t_line **head);
+t_all	*malloc_struct_all(void);
+void	free_list(t_line **head);
 
-//env_all/COPY_ENV_OF_ALL
+
+//UTILS ALL
+void	free_all(t_all *all);
+void  print_env(t_all *all);
+
+//ENV_ALL
+void  create_env_in_all(t_all *all);
+void	malloc_env_values(t_all *all, char **env, int big_size);
 void	copy_env_in_all(t_all *all, char **env);
-
-//env_all/CREATE ENV FOR ALL
 void  create_env_in_all(t_all *all);
 
 // PATH
@@ -154,10 +171,21 @@ int verifier_pipe(t_line **head);
 int create_argc_of_command(t_line **head);
 //REMPLIR ARGC OF COMMANDE NODE
 int remplir_argc_of_command_node(t_line *node);
+//METTRE LES VARIABLES D ENVIRONEMENTS
+int put_env_variables(t_line **head, t_all *all);
+//METTRE VARIABLES D ENVIRONEMENTS
+int put_env_variables(t_line **head, t_all *all);
+
 
 //EXECUTION
 void  execution(t_line **head, t_all *all);
-//EXECUTION EXTERNE
-void  execute_extern_command(t_line **head, t_all *all, t_line *node, int index)
+//CREATE_SHELL_LIST 
+t_shell_command **initialize_list_shell_command(t_line **head, int number_of_command);
+//EXECUTION UTILS
+void  free_shell_list(t_shell_command **head);
+int count_number_of_commands(t_line **head);
+//EXECUTION UTILS
+void  free_shell_list(t_shell_command **head);
+int count_number_of_commands(t_line **head);
 
 #endif

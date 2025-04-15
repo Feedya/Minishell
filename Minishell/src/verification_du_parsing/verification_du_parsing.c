@@ -19,6 +19,13 @@ void  verification_du_parsing(t_line **head, t_all *all)
     free_list(head);
     exit (1);
   }
+	erreur = put_env_variables(head, all);
+	if (erreur == 1)
+	{
+		free_all(all);
+		free_list(head);
+		exit (1);
+	}
   erreur = verifier_commande(head, all);
 	if (erreur == 1)
 	{

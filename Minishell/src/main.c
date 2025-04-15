@@ -10,99 +10,35 @@ t_line **initialize_line(t_all *all)
 		free_all(all);
 		exit (1);
 	}
+	*head = NULL;
 	return (head);
 }
 
-void	main_loop(t_all *all)
+t_line	**main_loop(t_all *all)
 {
 	t_line **head;
 
 	head = initialize_line(all);
-		all->line = readline("minishell > ");
-		if (all->line == NULL)
-			return ;
-		parsing(all, head);
-		verification_du_parsing(head, all);
-		//execution(head, all);
-		print_list(head);
-		add_history(all->line);
-		//}c
-		free_list(head);
-		free(all->line);
-		all->line = NULL;
+	all->line = readline("minishell > ");
+	if (all->line == NULL)
+		return NULL;
+	parsing(all, head);
+	verification_du_parsing(head, all);
+	//execution(head, all);
+	print_list(head);
+	add_history(all->line);
+	//print_env(all);
+	//}c
+	free(all->line);
+	all->line = NULL;
+	return (head);
 }
 
-
-void	free_list(t_line **head)
-{
-	t_line *new_node;
-	t_line *next;
-
-	new_node = *head;
-	while (new_node != NULL)
-	{
-		if (new_node->flag != NULL)
-		{
-			free(new_node->flag);
-			new_node->flag = NULL;
-		}
-		if (new_node->commande != NULL)
-		{
-			free(new_node->commande);
-			new_node->commande = NULL;
-		}
-		next = new_node->next;
-		free(new_node->valeur);
-		new_node->valeur = NULL;
-		free(new_node);
-		new_node = NULL;
-		new_node = next;	
-	}
-	free(head);
-	head = NULL;
-}
-
-void	free_all(t_all *all)
-{
-	int	i;
-
-	i = 0;
-	if (all != NULL)
-	{
-		if (all->env[i] != NULL)
-		{
-			while (all->env[i] != NULL)
-			{
-				free(all->env[i]);
-				all->env[i] = NULL;
-				i++;
-			}
-		}
-		i  = 0;
-		if (all->path != NULL)
-		{
-			while (all->path[i] != NULL)
-			{
-				free(all->path[i]);
-				all->path[i] = NULL;
-				i++;
-			}
-			free(all->path);
-			all->path = NULL;
-		}
-		if (all->line != NULL)
-		{
-			free(all->line);
-			all->line = NULL;
-		}
-		free(all);
-		all = NULL;
-	}
-}
 
 int	main(int argc, char **argv, char **env)
 {
 	t_all *all;
+	t_line **head;
 
 	(void) argc;
 	(void) argv;
@@ -123,7 +59,8 @@ int	main(int argc, char **argv, char **env)
 	make_signal();// pour ctrl + d/l/c
 
 	// MAIN LOOP
-	main_loop(all);
+	head = main_loop(all);
+	free_list(head);
 	free_all(all);
 	rl_clear_history();
 	return (0);

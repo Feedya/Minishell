@@ -1,41 +1,46 @@
 #include "../head.h"
 
-int	find_end_command(char *line, int index)
+//dans cette fonction on va renvoyer le fin des flags
+//pwd  -lasd    asdads
+int find_end_flag_command(char *line, int index)
 {
-  int start_flag;
-  //ls"ds"|pwd
-  if (line[index] == '|')
-    return (-1);
-  while (line[index] != '\0' && line[index] != ' ' && line[index] != '|' && line[index] != '>' && line[index] != '<')
-    index++;
-  while (line[index] == ' ')
-    index++;
+  int index_fin;
+
+  index_fin = index;
   while (1)
   {
-    if(line[index] == '|')
-      break;
-    if (line[index] == '\0')
-      break ;
     if (line[index] == '-')
     {
-			start_flag = index;
-      while (line[index] != '\0' && line[index] != ' ' && line[index] != '|' && line[index] != '>' && line[index] != '<')
+      while (line[index] != '\0' && line[index] != ' ' && line[index] != '>' && line[index] != '<')
         index++;
-			if (start_flag + 1 == index)
-        return (-1);
-			while (line[index] == ' ')
-        index++;
-		}
-    else if (line[index] != '\0' && line[index] != '-' && line[index] != ' ')
-    {
-      while (line[index] == ' ')
-        index--;
-      index++;
+      index_fin = index;
     }
-    else
-		  break;
+    while (line[index] == ' ')
+      index++;
+    if (line[index] != '-')
+      break;
   }
-	return (index);
+  return (index_fin);
+}
+
+int	find_end_command(char *line, int index)
+{
+  //ls"ds"|pwd
+  int index_fin;
+  if (line[index] == '|')
+    return (-1);
+  
+  // on saut les espaces ou les charactere tant qu on tombe pas sur un de ces charactere
+  while (line[index] != '\0' && line[index] != ' ' && line[index] != '|' && line[index] != '>' && line[index] != '<')
+    index++;
+  index_fin = index;
+  //on saut les espaces qui sont apres les charactere si il y a
+  while (line[index] == ' ')
+    index++;
+  //cette boucle est pour sauter tout les flags de la commande
+  if (line[index] == '-' && line[index] != '\0' && line[index] != ' ')
+    index_fin = find_end_flag_command(line, index);
+  return (index_fin);
 }
 
 t_line  *create_node_commande(int taille)
@@ -52,6 +57,7 @@ t_line  *create_node_commande(int taille)
   new_node->type = TOKEN_COMMANDE;
   new_node->command_type = PAS_COMMANDE;
   new_node->commande = NULL;
+  new_node->commande_path = NULL;
   new_node->flag = NULL;
   new_node->argc = NULL;
   new_node->next = NULL;

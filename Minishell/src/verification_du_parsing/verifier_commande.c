@@ -42,11 +42,14 @@ int	see_if_build_in(t_line *node)
 	return (1);
 }
 
-int check_if_exist(char *path_complet)
+int check_if_exist(char *path_complet, t_line *node)
 {
     if (access(path_complet, F_OK) == 0 && access(path_complet, X_OK) == 0)//F_OK si existe et F_OX si executable
-        return (0);
-    return (1);
+    {
+			node->commande_path = path_complet;
+			return (0);
+		}
+		return (1);
 }
 
 int	see_if_extern(char *commande, char **path, t_line *node)
@@ -63,7 +66,7 @@ int	see_if_extern(char *commande, char **path, t_line *node)
 		ft_strcpy(path[i], path_complet);
 		ft_strcat(path_complet, "/");
 		ft_strcat(path_complet, commande);
-		if (check_if_exist(path_complet) == 0)
+		if (check_if_exist(path_complet, node) == 0)
 		{
 			node->index = i;
 			return (0);

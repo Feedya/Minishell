@@ -152,9 +152,9 @@ int	malloc_commande_argc(char **argc, t_line *node, int *big_taille_index)
 
 	i = 0;
 	index = *big_taille_index;
-	if (node->type == TOKEN_COMMANDE)
+	if (node->command_type == TOKEN_COMMANDE)
 	{
-		while (node->commande[i] != '\0')
+		while (node->valeur[i] != '\0')
 			i++;
 		argc[index] = malloc(sizeof(char) * (i + 1));
 		if (argc[index] == NULL)
@@ -169,94 +169,22 @@ int	malloc_commande_argc(char **argc, t_line *node, int *big_taille_index)
 	return (1);
 }
 
-int	malloc_flag_argc(char *flag, char **argc, int *index)
-{
-	int	taille;
-	int	i;
-	int	c;
-
-	taille = 0;
-	i = 0;
-	c = *index;
-	while (flag[i] != '\0')
-	{
-		if (flag[i] == ' ')
-		{
-			while (flag[i] == ' ')
-				i++;
-			argc[c] = malloc(sizeof(char) * (taille + 1));
-			if (argc[c] == NULL)
-				return (1);
-			taille = 0;
-			c++;
-		}
-		else
-		{
-			i++;
-			taille++;
-		}
-	}
-	if (taille > 0)
-	{
-		argc[c] = malloc(sizeof(char) * (taille + 1));
-		if (argc[c] == NULL)
-			return (1);
-		c++;
-	}
-	argc[c] = NULL;
-	*index = c;
-	return (0);
-}
-
-int	malloc_valeur_argc(t_line *node, char **argc, int *i)
-{
-	int	index;
-	int	taille;
-
-	taille = 0;
-	index = *i;
-	while (node != NULL && (node->type == TOKEN_WORD || node->type == TOKEN_DOUBLE_QUOTES || node->type == TOKEN_SINGLE_QUOTES))
-	{
-		taille = 0;
-		while (node->valeur[taille] != '\0')
-			taille++;
-		argc[index] = malloc(sizeof(char) * (taille + 1));
-		if (argc[index] == NULL)
-			return (1);
-		index++;
-		node = node->next;
-	}
-	*i = index;
-	return (0);
-}
-
-int malloc_small_parts_command_argc(t_line *node, char *flag, char **argc)
+int malloc_small_parts_command_argc(char **argc, t_line *node, char *flag, int big_taille)
 {
 	int	error;
 	int	index;
 
 	index = 0;
 	error = 0;
-	
 	if (malloc_commande_argc(argc, node, &index) == 1)
 		return (1);
-	
 	if (node->flag != NULL)
-		error = malloc_flag_argc(flag, argc, &index);
+		error = malloc_flag_argc(node, argc);
+	
+	/*
 	if (error == 1)
-		return (1);
-
-	if (node->next != NULL)
-	{
-		node = node->next;
-		if (node != NULL && (node->type == TOKEN_DOUBLE_QUOTES || node->type == TOKEN_SINGLE_QUOTES || node->type == TOKEN_WORD))
-		{
-			error = malloc_valeur_argc(node, argc, &index);
-		}
-		if (error == 1)
-			return (1);
-	}
-	return (0);
+		return (0);
+	*/
 }
 
 int malloc_argc_of_node(t_line *node)
@@ -264,7 +192,6 @@ int malloc_argc_of_node(t_line *node)
   int big_taille;
   int erreur;
 	int	i;
-	char	**argc;
 
 	i = 0;
   erreur = 0;
@@ -274,7 +201,8 @@ int malloc_argc_of_node(t_line *node)
 		node->argc = NULL;
 		return (0);
 	}
-  node->argc = malloc((sizeof(char *)) * (big_taille + 2));
+	printf("BIG TAILLE : %d\n", big_taille);
+  node->argc = malloc((sizeof(char *)) * (big_taille + 1));
   if (node->argc == NULL)
     return (1);
 	while (i <= big_taille)
@@ -282,11 +210,10 @@ int malloc_argc_of_node(t_line *node)
 		node->argc[i] = NULL;
 		i++;
 	}
-	argc = node->argc;
-  erreur = malloc_small_parts_command_argc(node, node->flag, argc);
+  erreur = malloc_small_parts_command_argc(node->argc, node, node->flag, big_taille);
   if (erreur == 1)
     return (1);
-	return (0);
+  return (0);
 }
 
 int create_argc(t_line *node)
@@ -305,19 +232,92 @@ int create_argc(t_line *node)
 	return (0);
 }
 
-int create_argc_of_command(t_line **head)
-{
-  t_line *node;
 
-  node = *head;
-  while (node != NULL)
-  {
-    if (node->type == TOKEN_COMMANDE)
-    {
-		  if (create_argc(node) == 1)
-      	return (1);
+
+//DEUXIEME FICHIERRRRRRRRR
+
+
+#include "../../head.h"
+
+int	remplir_argc_node_command_flag(char **argc, char *flag)
+{
+	int	i;
+	int	c;
+	int	d;
+
+	i = 0;
+	c = 1;
+	d = 0;
+	while(flag[i] != '\0')
+	{
+		if (flag[i] == ' ')
+		{
+			argc[c][d] = '\0';
+			while (flag[i] == ' ')
+				i++;
+			c++;
+			d = 0;
 		}
-    node = node->next;
-  }
-  return (0);
+		else
+		{
+			argc[c][d] = flag[i];
+			i++;
+			d++;
+		}
+	}
+	argc[c][d] = '\0';
+	return (c);
+}
+
+void remplir_argc_node_command_valeur(char **argc, t_line *node, int taille)
+{
+	int	i;
+	int	d;
+
+	i = 0;
+	d = 0;
+	if (taille == 0)
+		taille = 0;
+	else
+		taille++;//parceque la taille indexe le dernier qu on a remplis
+	while (node != NULL && node->type != TOKEN_PIPE && node->type != TOKEN_APPEND && node->type != TOKEN_HEREDOC && node->type != TOKEN_REDIRECT_IN && node->type != TOKEN_REDIRECT_OUT)
+	{
+		while (node->valeur[i] != '\0')
+		{
+			argc[taille][d] = node->valeur[i];
+			i++;
+			d++;
+		}
+		argc[taille][d] = '\0';
+		taille++;
+		d = 0;
+		i = 0;
+		node = node->next;
+	}
+	argc[taille] = NULL;
+}
+
+int remplir_argc_of_command_node(t_line *node)
+{
+  int taille;
+
+	taille = 0;
+	while (node->commande[taille] != '\0')
+	{
+		node->argc[0][taille] = node->commande[taille];
+		taille++;
+	}
+	taille = 1;
+	if (node->flag == NULL && node->next == NULL)
+	{
+		node->next = NULL;
+		node->prev = NULL;
+		return (0);
+	}
+	printf("avant le if");
+  if (node->flag != NULL)
+    taille = remplir_argc_node_command_flag(node->argc, node->flag);
+	printf("taille apres avoir mis les flags");
+	remplir_argc_node_command_valeur(node->argc, node->next, taille);
+	return (0);
 }

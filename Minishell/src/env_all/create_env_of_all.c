@@ -54,4 +54,6 @@ void  create_env_in_all(t_all *all)
 {
   malloc_create_env_in_all(all);
   fill_create_env_in_all(all);
+
+  malloc_env_values(all, all->env, 5);
 }
