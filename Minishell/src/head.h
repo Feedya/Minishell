@@ -23,12 +23,29 @@
 #include <curses.h>
 #include <stddef.h>
 #include <term.h>
+#include <fcntl.h>
 
 #define	HOME_VALUE	"HOME=/home/fepopadi"
 #define PATH_VALUE	"PATH=/home/fepopadi/bin:/home/fepopadi/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"
 #define PWD_VALUE		"PWD=/home/fepopadi/Desktop/Minishell"
 #define	USER_VALUE	"USER=fepopadi"
 #define	SHLVL_VALUE	"SHLVL=1"
+
+typedef struct t_line t_line;
+typedef struct t_shell_command t_shell_command;
+
+//dans execution pour vite voir quelle commande c est
+typedef enum build_in_type
+{
+  NONE_FUNCT,
+  ECHO_BUILD_IN,
+  CD_BUILD_IN,
+  PWD_BUILD_IN,
+  EXPORT_BUILD_IN,
+  UNSET_BUILD_IN,
+  ENV_BUILD_IN,
+  EXIT_BUILD_IN,
+} e_build_in_type;
 
 typedef enum token_type //le type de chaque charactere qu on regarde
 {
@@ -70,7 +87,9 @@ typedef struct t_line
   char **argc;
   e_token_type type;//type
   e_quotes quotes;
+  e_build_in_type build_in_type;
   e_command_type command_type; // utiliser que commande
+  t_shell_command *fd; // que commande
 } t_line;
 
 typedef struct t_all
@@ -89,7 +108,7 @@ typedef struct t_shell_command
 {
   struct t_shell_command	*next;
   struct t_shell_command	*prev;
-	int	error_indicator; //message dd erreur
+	int	error_indicator; //message d erreur
 	int	stdin;
 	int	stdout;
 	t_line	*command_info;// pointeur sur commande
@@ -116,6 +135,12 @@ void	free_list(t_line **head);
 //UTILS ALL
 void	free_all(t_all *all);
 void  print_env(t_all *all);
+
+//UTILS SHELL COMMAND
+void  free_shell_cmd(t_shell_command **head);
+t_shell_command ** malloc_head_shell_cmd(void);
+t_shell_command	*create_shell_cmd_node(void);
+void  put_node_to_liste_shell_cmd(t_shell_command **head, t_shell_command *node);
 
 //ENV_ALL
 void  create_env_in_all(t_all *all);
@@ -172,20 +197,38 @@ int create_argc_of_command(t_line **head);
 //REMPLIR ARGC OF COMMANDE NODE
 int remplir_argc_of_command_node(t_line *node);
 //METTRE LES VARIABLES D ENVIRONEMENTS
-int put_env_variables(t_line **head, t_all *all);
-//METTRE VARIABLES D ENVIRONEMENTS
-int put_env_variables(t_line **head, t_all *all);
 
+int expand_env_variables(t_line **head, t_all *all);
 
-//EXECUTION
-void  execution(t_line **head, t_all *all);
 //CREATE_SHELL_LIST 
 t_shell_command **initialize_list_shell_command(t_line **head, int number_of_command);
 //EXECUTION UTILS
-void  free_shell_list(t_shell_command **head);
+
 int count_number_of_commands(t_line **head);
-//EXECUTION UTILS
-void  free_shell_list(t_shell_command **head);
-int count_number_of_commands(t_line **head);
+
+//STICK_STDIN_STDOUT
+t_shell_command **stick_stdin_stdout(t_line **head, t_all *all);
+//TOUT LES COLLAGE DE STDIN STDOUT
+void	make_by_default(t_shell_command **head);
+int	make_pipe(t_shell_command **shell_head);
+int make_rederiction_stdin_stdout(t_shell_command **shell_head, t_line **line_head);
+//REDERICTION
+int make_redirect_append(t_shell_command *shell_node, t_line *line_node);
+int	make_redirect_heredoc(t_shell_command *shell_node, t_line *line_node);
+int	make_redirect_in(t_shell_command *shell_node, t_line *line_node);
+int make_redirect_out(t_shell_command *shell_node, t_line *line_node);
+int make_rederiction_stdin_stdout(t_shell_command **shell_head, t_line **line_head);
+
+
+//EXTERN
+int execution(t_line **line_head, t_shell_command **shell_head, t_all *all);
+int execute_child_extern(t_shell_command *shell_node, t_all *all);
+int make_extern_command(t_shell_command *shell_node, t_all *all);
+
+
+//BUILD IN
+int make_build_in_command(t_shell_command *shell_node, t_all *all);
+void make_build_in_echo(t_shell_command *shell_node);
+
 
 #endif

@@ -26,19 +26,40 @@ int	ft_comparer(char *str, char *str2) // renvoie 1 si faux et 0 si juste
 int	see_if_build_in(t_line *node)
 {
 	if (ft_comparer(node->commande, "echo") == 0)
+	{
+		node->build_in_type = ECHO_BUILD_IN;
 		return (0);
+	}
 	if (ft_comparer(node->commande, "cd") == 0)
+	{
+		node->build_in_type = CD_BUILD_IN;
 		return (0);
+	}
 	if (ft_comparer(node->commande, "pwd") == 0)
+	{
+		node->build_in_type = PWD_BUILD_IN;
 		return (0);
+	}
 	if (ft_comparer(node->commande, "export") == 0)
+	{
+		node->build_in_type = EXPORT_BUILD_IN;
 		return (0);
+	}
 	if (ft_comparer(node->commande, "env") == 0)
+	{
+		node->build_in_type = ENV_BUILD_IN;
 		return (0);
+	}
 	if (ft_comparer(node->commande, "unset") == 0)
+	{
+		node->build_in_type = UNSET_BUILD_IN;
 		return (0);
+	}
 	if (ft_comparer(node->commande, "exit") == 0)
+	{
+		node->build_in_type = EXIT_BUILD_IN;
 		return (0);
+	}
 	return (1);
 }
 

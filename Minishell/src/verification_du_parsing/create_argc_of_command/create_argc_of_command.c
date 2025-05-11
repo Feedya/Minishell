@@ -32,7 +32,6 @@ int count_big_taille_of_argc_command(t_line *node)
 		node = node->next;
 		taille++;
 	}
-	printf("big taille\n");
 	return (taille);
 }
 

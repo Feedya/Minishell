@@ -1,34 +1,36 @@
 #include "../head.h"
 
-int count_number_of_commands(t_line **head)
+int execution(t_line **line_head, t_shell_command **shell_head, t_all *all)
 {
-  t_line *node;
-  int counter;
+  t_shell_command *shell_node;
+  int error;
 
-  node = *head;
-  counter = 0;
-  while (node != NULL)
+  shell_node = *shell_head;
+  while (shell_node != NULL)
   {
-    if (node->command_type != PAS_COMMANDE)
-      counter++;
-    node = node->next;
+    if (shell_node->command_info->command_type == BUILD_IN)//BUILD_IN
+    {
+      error = make_build_in_command(shell_node, all);
+			if (error == 1)
+			{
+				free_all(all);
+				free_list(line_head);
+				free_shell_cmd(shell_head);
+				exit (1);
+			}
+    }
+    if (shell_node->command_info->command_type == EXTERN)
+    {
+      error = make_extern_command(shell_node, all);//EXTERN
+			if (error == 1)
+			{
+				free_all(all);
+				free_list(line_head);
+				free_shell_cmd(shell_head);
+				exit (1);
+			}
+		}
+    shell_node = shell_node->next;
   }
-  return (counter);
-}
-
-void  execution(t_line **head, t_all *all)
-{
-  t_line *node;
-  int number_of_commande;
-
-  number_of_commande = count_number_of_commands(head);
-
-  if (number_of_commande == 1)
-  {
-    one_command(head);
-  }
-  else if (number_of_commande > 0)
-  {
-    multiple_command(head, number_of_commande);
-  }
+  return (0);
 }

@@ -6,6 +6,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Werror -g #-fsanitize=address
 READ_FLAGS = -lreadline
 
+STDIN_STDOUT_DIR = src/stick_stdin_stdout
 OBJ_DIR = obj
 PARSING_DIR = src/parsing
 SRC_DIR = src
@@ -16,10 +17,17 @@ PARSING_COMMANDE_DIR = src/parsing/add_commande
 VERIFICATION_DIR = src/verification_du_parsing
 UTILS_DIR = src/utils
 FILL_FLAG_COMMANDE_NODE_DIR = src/verification_du_parsing/fill_flag_and_commande
-#EXECUTION_DIR = src/execution
+EXECUTION_DIR = src/execution
+EXECUTE_EXTERN_DIR = src/execution/EXTERN
 ARGC_OF_COMMAND_DIR = src/verification_du_parsing/create_argc_of_command
-ENV_VARIABLES_DIR = src/verification_du_parsing/put_env_variables
+#ENV_VARIABLES_DIR = src/verification_du_parsing/put_env_variables
+EXPAND_ENV_VARIABLES = src/verification_du_parsing/expand_env_variables
+REDERICTION_DIR = src/stick_stdin_stdout/make_redirictions
+BUILDIN_DIR = src/execution/BUILD_IN
 
+BUILDIN_SRC = $(BUILDIN_DIR)/make_echo.c $(BUILDIN_DIR)/make_build_in_echo.c
+
+EXTERNEXTERN_DIR = $(EXECUTE_EXTERN_DIR)/execute_child_extern.c $(EXECUTE_EXTERN_DIR)/make_extern_command.c
 
 VERIFICATION_SRC = $(VERIFICATION_DIR)/put_files.c\
 		$(VERIFICATION_DIR)/verifier_commande.c $(VERIFICATION_DIR)/verification_du_parsing.c\
@@ -33,21 +41,40 @@ PARSING_SRCS = $(PARSING_DIR)/add_double_quotes.c\
 		$(PARSING_DIR)/add_pipe.c\
 		$(PARSING_DIR)/add_word.c 
 
-UTILS_SRC = $(UTILS_DIR)/utils_liste.c $(UTILS_DIR)/utils.c $(UTILS_DIR)/utils_all.c
+UTILS_SRC = $(UTILS_DIR)/utils_liste.c $(UTILS_DIR)/utils.c $(UTILS_DIR)/utils_all.c $(UTILS_DIR)/utils_shell_cmd.c
+
+
 
 ARGCOFCOMMAND_DIR = $(ARGC_OF_COMMAND_DIR)/create_argc_of_command.c $(ARGC_OF_COMMAND_DIR)/remplir_argc_of_command.c\
 
 FILLFLAGCOMMANDENODE_DIR = $(FILL_FLAG_COMMANDE_NODE_DIR)/fill_flag_and_commande.c $(FILL_FLAG_COMMANDE_NODE_DIR)/create_char_commande_node.c\
 
-ENVVARIABLES_DIR = $(ENV_VARIABLES_DIR)/put_env_variables.c #PARSING
+#ENVVARIABLES_DIR = $(ENV_VARIABLES_DIR)/put_env_variables.c #PARSING
 
 ENVALL_DIR =	$(ENV_ALL_DIR)/copy_env_of_all.c $(ENV_ALL_DIR)/create_env_of_all.c $(ENV_ALL_DIR)/malloc_fill_env_values.c\
+
+STDIN_STDOUT = $(STDIN_STDOUT_DIR)/stick_stdin_stdout.c $(STDIN_STDOUT_DIR)/make_pipe.c\
+		$(STDIN_STDOUT_DIR)/make_by_default.c
+
+EXPANDENVVARIABLES_DIR = $(EXPAND_ENV_VARIABLES)/expand_env_variables.c
+
+MAKEREDERICTION_DIR = $(REDERICTION_DIR)/make_redirictions.c\
+		$(REDERICTION_DIR)/make_redirect_out.c $(REDERICTION_DIR)/make_redirect_in.c\
+		$(REDERICTION_DIR)/make_redirect_heredoc.c $(REDERICTION_DIR)/make_redirect_append.c\
+
+#------------------------------------------------
+# SOURCES : SOURCES : SOURCES : SOURCES :
 
 SRCS = $(SRC_DIR)/main.c \
 		$(SIGNAL_DIR)/make_signal.c\
 		$(PATH_DIR)/copy_path.c\
 		$(PARSING_SRCS) $(UTILS_SRC) $(VERIFICATION_SRC) $(ARGCOFCOMMAND_DIR)\
-		$(FILLFLAGCOMMANDENODE_DIR) $(ENVVARIABLES_DIR) $(ENVALL_DIR)
+		$(FILLFLAGCOMMANDENODE_DIR) $(ENVALL_DIR)\
+		$(STDIN_STDOUT) $(MAKEREDERICTION_DIR)\
+		$(EXTERNEXTERN_DIR) $(EXECUTION_DIR)/execution.c\
+		$(BUILDIN_SRC)
+#-------------------------------------------------
+#$(EXPANDENVVARIABLES_DIR)
 
 
 OBJS = $(SRCS:%.c=$(OBJ_DIR)/%.o)

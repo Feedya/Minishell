@@ -16,24 +16,27 @@ t_line **initialize_line(t_all *all)
 
 t_line	**main_loop(t_all *all)
 {
-	t_line **head;
+	t_line **head_line;
+	t_shell_command **head_shell;
 
-	head = initialize_line(all);
+	head_line = initialize_line(all);
 	all->line = readline("minishell > ");
 	if (all->line == NULL)
 		return NULL;
-	parsing(all, head);
-	verification_du_parsing(head, all);
-	//execution(head, all);
-	print_list(head);
+	parsing(all, head_line);
+	verification_du_parsing(head_line, all);
+	head_shell = stick_stdin_stdout(head_line, all);
+	execution(head_line, head_shell, all);
+	print_list(head_line);
 	add_history(all->line);
 	//print_env(all);
+	//print_env(all);
 	//}c
+	free_shell_cmd(head_shell);
 	free(all->line);
 	all->line = NULL;
-	return (head);
+	return (head_line);
 }
-
 
 int	main(int argc, char **argv, char **env)
 {
