@@ -66,3 +66,38 @@ void	ft_strcat(char *dest, char *str)
 	}
 	dest[i] = '\0';
 }
+
+int	ft_comparer(char *str, char *str2) // renvoie 1 si faux et 0 si juste
+{
+	int	i;
+
+	i = 0;
+	while (str2[i] != '\0' && str[i] != '\0' && str[i] == str2[i])
+		i++;
+	if (str[i] == '\0')
+		return (0);
+	if (str2[i] == '\0')
+		return (0);
+	return (1);
+}
+
+char	*create_string(char *str)
+{
+	int	i;
+	char	*dest;
+
+	i = 0;
+	while (str[i] != '\0')
+		i++;
+	dest = malloc(sizeof(char) * (i + 1));
+	if (dest == NULL)
+		return (NULL);
+	i = 0;
+	while (str[i] != '\0')
+	{
+		dest[i] = str[i];
+		i++;
+	}
+	dest[i] = '\0';
+	return (dest);
+}

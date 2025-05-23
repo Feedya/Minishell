@@ -5,6 +5,7 @@ void make_build_in_echo(t_shell_command *shell_node)
   t_line *line_node;
   int flag;
 
+  make_dup(shell_node);
   flag = 0;
   line_node = shell_node->command_info;
   if (line_node->flag != NULL)

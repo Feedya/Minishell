@@ -101,6 +101,7 @@ typedef struct t_all
   char **path;
   char **path_values;
   char **env;
+  char **export;
 } t_all;
 
 //pour execution liste de coommandes shell
@@ -123,6 +124,8 @@ void	ft_strcpy(char *str, char *dest);
 int	ft_strncmp(char *avec_quoi, char *comparer, int nbr);
 void	ft_strncpy(char *str, char *dest, int index, int taille);
 void	ft_strcat(char *dest, char *str);
+int	ft_comparer(char *str, char *str2);
+char	*create_string(char *str);
 
 //UTILS LISTE
 void	add_node_to_head(t_line **head, t_line *node);
@@ -135,6 +138,9 @@ void	free_list(t_line **head);
 //UTILS ALL
 void	free_all(t_all *all);
 void  print_env(t_all *all);
+void	print_char_export(char **export);
+void	free_double_char(char **map);
+void	print_double_char(char **map);
 
 //UTILS SHELL COMMAND
 void  free_shell_cmd(t_shell_command **head);
@@ -147,6 +153,7 @@ void  create_env_in_all(t_all *all);
 void	malloc_env_values(t_all *all, char **env, int big_size);
 void	copy_env_in_all(t_all *all, char **env);
 void  create_env_in_all(t_all *all);
+void	find_index_env_values(char *env, int *index);
 
 // PATH
 void  copy_path(t_all *all);
@@ -196,9 +203,12 @@ int verifier_pipe(t_line **head);
 int create_argc_of_command(t_line **head);
 //REMPLIR ARGC OF COMMANDE NODE
 int remplir_argc_of_command_node(t_line *node);
-//METTRE LES VARIABLES D ENVIRONEMENTS
-
-int expand_env_variables(t_line **head, t_all *all);
+//EXPAND METTRE LES VARIABLES D ENVIRONEMENTS
+int put_env_variables(t_line **head, t_all *all);
+int	fill_expanded_str(char *expanded_str, char *str, t_all *all);
+int count_taille_str_with_env(char *str, t_all *all);
+int fount_index_of_env(char *env, t_all *all);
+char  *take_name_of_env_from_str(char *str, int index);
 
 //CREATE_SHELL_LIST 
 t_shell_command **initialize_list_shell_command(t_line **head, int number_of_command);
@@ -220,6 +230,9 @@ int make_redirect_out(t_shell_command *shell_node, t_line *line_node);
 int make_rederiction_stdin_stdout(t_shell_command **shell_head, t_line **line_head);
 
 
+//DUP2
+int	make_dup(t_shell_command *shell_node);
+
 //EXTERN
 int execution(t_line **line_head, t_shell_command **shell_head, t_all *all);
 int execute_child_extern(t_shell_command *shell_node, t_all *all);
@@ -228,7 +241,27 @@ int make_extern_command(t_shell_command *shell_node, t_all *all);
 
 //BUILD IN
 int make_build_in_command(t_shell_command *shell_node, t_all *all);
+//make echo
 void make_build_in_echo(t_shell_command *shell_node);
-
+//make cd
+int	make_cd(t_shell_command *shell_node, t_all *all);
+int	make_cd_home(t_shell_command *shell_head, t_all *all);
+int	find_index_in_env(char **env, char *str);
+char	*take_env_from_index(t_all *all, int	index);
+int	add_pwd_oldpwd(char *old, char **env, int mode);
+int	changes_pwd_oldpwd_values(t_all *all);
+//MAKE PWD
+int	make_pwd(t_shell_command *node);
+//MAKE ENV
+void  make_env(t_all *all, t_shell_command *shell_node);
+int	add_to_env(t_shell_command *shell_node, t_all *all, char *valeur);
+//EXPORT
+int make_export(t_shell_command *shell_node, t_all *all);
+void  printf_all_export(t_all *all);
+int add_new_to_export(t_all *all, char *valeur);
+int	add_to_env(t_shell_command *shell_node, t_all *all, char *valeur);
+int	add_to_value_env(t_all *all, char *valeur);
+char  **malloc_copy_env_export(char **env, char *valeur);
+void	fill_copy_env(char **copy_env, char **env, char *valeur);
 
 #endif

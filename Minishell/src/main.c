@@ -28,9 +28,12 @@ t_line	**main_loop(t_all *all)
 	head_shell = stick_stdin_stdout(head_line, all);
 	execution(head_line, head_shell, all);
 	print_list(head_line);
+	/*printf("--------------------------------\n");
+	print_env(all);
+	printf("--------------------------------\n");*/
+	print_double_char(all->export);
 	add_history(all->line);
-	//print_env(all);
-	//print_env(all);
+	print_env(all);
 	//}c
 	free_shell_cmd(head_shell);
 	free(all->line);
@@ -54,7 +57,6 @@ int	main(int argc, char **argv, char **env)
 		create_env_in_all(all);//pour le cas si env n existe pas
 	else
 		copy_env_in_all(all, env); //pour le cas si env n existe pas
-	
 	//ON CREE LE CHAR **PATH 
 	copy_path(all);//creation du path pour les commandes externe
 

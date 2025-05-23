@@ -8,21 +8,6 @@
 ◦ env with no options or arguments
 ◦ exit with no option)*/
 
-int	ft_comparer(char *str, char *str2) // renvoie 1 si faux et 0 si juste
-{
-	int	i;
-
-	i = 0;
-	while (str2[i] != '\0' && str[i] != '\0' && str[i] == str2[i])
-		i++;
-	if (str[i] == '\0')
-		return (0);
-	if (str2[i] == '\0')
-		return (0);
-	return (1);
-
-}
-
 int	see_if_build_in(t_line *node)
 {
 	if (ft_comparer(node->commande, "echo") == 0)
